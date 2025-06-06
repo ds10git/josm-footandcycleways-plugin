@@ -42,10 +42,6 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
   private ImageSelectionButton medium;
   private ImageSelectionButton low;
   
-  private boolean isLuebeckerMethodeOptional() {
-    return FootAndCycleProperties.OPTIONAL_LUEBECK.get();
-  }
-  
   private boolean isTrafficMapping() {
     return FootAndCycleProperties.MAP_TRAFFIC.get();
   }
@@ -366,133 +362,131 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
             }
           }
           
-          if(!isLuebeckerMethodeOptional()) {
-            if(Objects.equals(w.get(Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN), Values.NONE)) {
-              cmdSet.put(Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, ""));
+          if(Objects.equals(w.get(Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN), Values.NONE)) {
+            cmdSet.put(Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, ""));
+          }
+          if(Objects.equals(w.get(Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN), Values.NONE)) {
+            cmdSet.put(Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, ""));
+          }
+          if(Objects.equals(w.get(Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN), Values.NONE)) {
+            cmdSet.put(Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, ""));
+          }
+          
+          String forwardSign = "";
+          String backwardSign = "";
+          
+          if(forward.isSidewalk()) {
+            forwardSign = Values.SIGN_FOOTWAY;
+          }
+          else if(forward.isShared() && !forward.isBicycleUsable()) {
+            forwardSign = Values.SIGN_SHARED;
+          }
+          else if(forward.isSegregated() && !forward.isBicycleUsable()) {
+            forwardSign = Values.SIGN_SEGREGATED;
+          }
+          else if(forward.isLaneExclusive() || forward.cyclewayOnKerb.isSelected()) {
+            forwardSign = Values.SIGN_CYCLEWAY;
+          }
+          
+          if(backward.isSidewalk()) {
+            backwardSign = Values.SIGN_FOOTWAY;
+          }
+          else if(backward.isShared() && !backward.isBicycleUsable()) {
+            backwardSign = Values.SIGN_SHARED;
+          }
+          else if(backward.isSegregated() && !backward.isBicycleUsable()) {
+            backwardSign = Values.SIGN_SEGREGATED;
+          }
+          else if(backward.isLaneExclusive() || backward.cyclewayOnKerb.isSelected()) {
+            backwardSign = Values.SIGN_CYCLEWAY;
+          }
+          
+          if(forward.bicycleFreeBotDirection.isSelected()) {
+            forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_BOTH_WAYS;
+          }
+          else if(forward.isNoPositiveOneway()) {
+            forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+          }
+                    
+          if(backward.bicycleFreeBotDirection.isSelected()) {
+            backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_BOTH_WAYS;
+          }
+          else if(backward.isNoPositiveOneway()) {
+            backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+          }
+          
+          if(!forwardSign.isBlank() && forward.bicycleFree.isSelected()) {
+            forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_FREE;
+          }
+          
+          if(!backwardSign.isBlank() && backward.bicycleFree.isSelected()) {
+            backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_FREE;
+          }
+          
+          if(forward.isFree()) {
+            if(forward.bicycleFree.isSelected()) {
+              forwardSign = Values.SIGN_BICYLCE_FREE;
             }
-            if(Objects.equals(w.get(Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN), Values.NONE)) {
-              cmdSet.put(Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, ""));
+            else if(forward.bicycleFreeBotDirection.isSelected()) {
+              forwardSign = Values.SIGN_BICYLCE_BOTH_WAYS;
             }
-            if(Objects.equals(w.get(Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN), Values.NONE)) {
-              cmdSet.put(Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, new ChangePropertyCommand(w, Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, ""));
+            else {
+              forwardSign = Values.NONE;
             }
-            
-            String forwardSign = "";
-            String backwardSign = "";
-            
-            if(forward.isSidewalk()) {
-              forwardSign = Values.SIGN_FOOTWAY;
+          }
+
+          if(backward.isFree()) {
+            if(backward.bicycleFree.isSelected()) {
+              backwardSign = Values.SIGN_BICYLCE_FREE;
             }
-            else if(forward.isShared() && !forward.isBicycleUsable()) {
-              forwardSign = Values.SIGN_SHARED;
+            else if(backward.bicycleFreeBotDirection.isSelected()) {
+              backwardSign = Values.SIGN_BICYLCE_BOTH_WAYS;
             }
-            else if(forward.isSegregated() && !forward.isBicycleUsable()) {
-              forwardSign = Values.SIGN_SEGREGATED;
+            else {
+              backwardSign = Values.NONE;
             }
-            else if(forward.isLaneExclusive() || forward.cyclewayOnKerb.isSelected()) {
-              forwardSign = Values.SIGN_CYCLEWAY;
+          }
+          
+          System.out.println(forwardSign + " " + backwardSign);
+          
+          if(!forwardSign.isBlank()) {
+            forwardSign = Values.createTrafficSignEntry(forwardSign);
+          }
+         
+          if(!backwardSign.isBlank()) {
+            backwardSign = Values.createTrafficSignEntry(backwardSign);
+          }
+          
+          if((forward.isSidewalk() || forward.isSidewalkFree()) && (backward.isSidewalk() || backward.isSidewalkFree()) && !forward.isLane() && !backward.isLane()) {
+            if(Objects.equals(forwardSign, backwardSign)) {
+              cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_BOTH_TRAFFIC_SIGN, forwardSign, cmdSet));
             }
-            
-            if(backward.isSidewalk()) {
-              backwardSign = Values.SIGN_FOOTWAY;
-            }
-            else if(backward.isShared() && !backward.isBicycleUsable()) {
-              backwardSign = Values.SIGN_SHARED;
-            }
-            else if(backward.isSegregated() && !backward.isBicycleUsable()) {
-              backwardSign = Values.SIGN_SEGREGATED;
-            }
-            else if(backward.isLaneExclusive() || backward.cyclewayOnKerb.isSelected()) {
-              backwardSign = Values.SIGN_CYCLEWAY;
-            }
-            
-            if(forward.bicycleFreeBotDirection.isSelected()) {
-              forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_BOTH_WAYS;
-            }
-            else if(forward.isNoPositiveOneway()) {
-              forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
-            }
-                      
-            if(backward.bicycleFreeBotDirection.isSelected()) {
-              backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_BOTH_WAYS;
-            }
-            else if(backward.isNoPositiveOneway()) {
-              backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
-            }
-            
-            if(!forwardSign.isBlank() && forward.bicycleFree.isSelected()) {
-              forwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_FREE;
-            }
-            
-            if(!backwardSign.isBlank() && backward.bicycleFree.isSelected()) {
-              backwardSign += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BICYLCE_FREE;
-            }
-            
-            if(forward.isFree()) {
-              if(forward.bicycleFree.isSelected()) {
-                forwardSign = Values.SIGN_BICYLCE_FREE;
-              }
-              else if(forward.bicycleFreeBotDirection.isSelected()) {
-                forwardSign = Values.SIGN_BICYLCE_BOTH_WAYS;
-              }
-              else {
-                forwardSign = Values.NONE;
-              }
-            }
-  
-            if(backward.isFree()) {
-              if(backward.bicycleFree.isSelected()) {
-                backwardSign = Values.SIGN_BICYLCE_FREE;
-              }
-              else if(backward.bicycleFreeBotDirection.isSelected()) {
-                backwardSign = Values.SIGN_BICYLCE_BOTH_WAYS;
-              }
-              else {
-                backwardSign = Values.NONE;
-              }
-            }
-            
-            System.out.println(forwardSign + " " + backwardSign);
-            
-            if(!forwardSign.isBlank()) {
-              forwardSign = Values.createTrafficSignEntry(forwardSign);
-            }
-           
-            if(!backwardSign.isBlank()) {
-              backwardSign = Values.createTrafficSignEntry(backwardSign);
-            }
-            
-            if((forward.isSidewalk() || forward.isSidewalkFree()) && (backward.isSidewalk() || backward.isSidewalkFree()) && !forward.isLane() && !backward.isLane()) {
-              if(Objects.equals(forwardSign, backwardSign)) {
-                cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_BOTH_TRAFFIC_SIGN, forwardSign, cmdSet));
-              }
-              else {
-                cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
-                cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
-              }
-            }
-            else if((forward.isSidewalk() || forward.isSidewalkFree()) && !forward.isLane()) {
+            else {
               cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
-            }
-            else if((backward.isSidewalk() || backward.isSidewalkFree()) && !backward.isLane()) {
               cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
             }
-            
-            if(forward.isCycleway() && backward.isCycleway()) {
-              if(Objects.equals(forwardSign, backwardSign)) {
-                cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, forwardSign, cmdSet));
-              }
-              else {
-                cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
-                cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
-              }
+          }
+          else if((forward.isSidewalk() || forward.isSidewalkFree()) && !forward.isLane()) {
+            cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
+          }
+          else if((backward.isSidewalk() || backward.isSidewalkFree()) && !backward.isLane()) {
+            cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
+          }
+          
+          if(forward.isCycleway() && backward.isCycleway()) {
+            if(Objects.equals(forwardSign, backwardSign)) {
+              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN, forwardSign, cmdSet));
             }
-            else if(forward.isCycleway()) {
+            else {
               cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
-            }
-            else if(backward.isCycleway()) {
               cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
             }
+          }
+          else if(forward.isCycleway()) {
+            cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
+          }
+          else if(backward.isCycleway()) {
+            cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
           }
           
           if(forward.isSidewalkFree() && backward.isSidewalkFree()) {
@@ -696,39 +690,24 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
             cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT, Values.TRACK, cmdSet));
           }
           
-          if(forward.isDesignated(isLuebeckerMethodeOptional()) && backward.isDesignated(isLuebeckerMethodeOptional())) {
+          if(forward.isDesignated() && backward.isDesignated()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_BICYCLE, Values.DESIGNATED, cmdSet));
           }
-          else if(forward.isDesignated(isLuebeckerMethodeOptional())) {
+          else if(forward.isDesignated()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_BICYCLE, Values.DESIGNATED, cmdSet));
           }
-          else if(backward.isDesignated(isLuebeckerMethodeOptional())) {
+          else if(backward.isDesignated()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_BICYCLE, Values.DESIGNATED, cmdSet));
           }
           
           if(forward.isFree() && backward.isFree()) {
-            if(isLuebeckerMethodeOptional()) {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_BICYCLE, Values.YES, cmdSet));
-            }
-            else {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_BICYCLE, Values.DESIGNATED, cmdSet));
-            }
+            cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_BOTH_BICYCLE, Values.DESIGNATED, cmdSet));
           }
           else if(forward.isFree()) {
-            if(isLuebeckerMethodeOptional()) {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_BICYCLE, Values.YES, cmdSet));
-            }
-            else {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_BICYCLE, Values.DESIGNATED, cmdSet));
-            }
+            cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_RIGHT_BICYCLE, Values.DESIGNATED, cmdSet));
           }
           else if(backward.isFree()) {
-            if(isLuebeckerMethodeOptional()) {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_BICYCLE, Values.YES, cmdSet));
-            }
-            else {
-              cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_BICYCLE, Values.DESIGNATED, cmdSet));
-            }
+            cmds.add(TagWaysAction.createCommand(w, Keys.CYCLEWAY_LEFT_BICYCLE, Values.DESIGNATED, cmdSet));
           }
           
           if(forward.isLane() && backward.isLane()) {
@@ -1090,8 +1069,8 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
       return negativeOneway.isSelected();
     }
 
-    public boolean isDesignated(boolean luebeck) {
-      return (cyclewayOnKerb.isSelected() || shared.isSelected() || segregated.isSelected()) && !bicycleFree.isSelected() || (bicycleUsable.isSelected()) || (!luebeck && bicycleUsable.isSelected());
+    public boolean isDesignated() {
+      return (cyclewayOnKerb.isSelected() || shared.isSelected() || segregated.isSelected()) && !bicycleFree.isSelected() || (bicycleUsable.isSelected()) || (bicycleUsable.isSelected());
     }
     
     public boolean isFree() {
