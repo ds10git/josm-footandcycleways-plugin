@@ -136,6 +136,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     backward.separateSidewalk = new ImageSelectionButton("DE_239_SL", tr("The sidewalk in {0} direction exists as separate way", tr(Values.BACKWARD)));
     backward.separateCycleway = new ImageSelectionButton("DE_237_SL", tr("The cycleway in {0} direction exists as separate way and is mandatory", tr(Values.BACKWARD)));
     backward.separateCyclewayFree = new ImageSelectionButton("DE_1022-10_SL", tr("The cycleway in {0} direction exists as separate way and is optional", tr(Values.BACKWARD)));
+    backward.sidewalkWithoutSign = new ImageSelectionButton("footway", tr("The street in {0} direction has only a sidewalk without a sign", tr(Values.BACKWARD)));
     backward.sidewalk = new ImageSelectionButton("DE_239", tr("The street in {0} direction has only a sidewalk", tr(Values.BACKWARD)));
     backward.shared = new ImageSelectionButton("DE_240", tr("The street in {0} direction has a sidewalk and a cycleway that are shared", tr(Values.BACKWARD)));
     backward.segregated = new ImageSelectionButton("DE_241-30", tr("The street in {0} direction has a sidewalk and a cycleway that are segregated", tr(Values.BACKWARD)));
@@ -152,6 +153,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     forward.cyclewayLaneExclusive = new ImageSelectionButton("DE_237", tr("The cycleway in {0} direction is a separate lane and is mandatory", tr(Values.FORWARD)));
     forward.cyclewayLaneAdvisory = new ImageSelectionButton("bike-lane", tr("The cycleway in {0} direction is on a lane and is optional", tr(Values.FORWARD)));
     
+    forward.sidewalkWithoutSign = new ImageSelectionButton("footway", tr("The street in {0} direction has only a sidewalk without a sign", tr(Values.FORWARD)), true);
     forward.sidewalk = new ImageSelectionButton("DE_239", tr("The street in {0} direction has only a sidewalk", tr(Values.FORWARD)), true);
     forward.shared = new ImageSelectionButton("DE_240", tr("The street in {0} direction has a sidewalk and a cycleway that are shared", tr(Values.FORWARD)), true);
     forward.segregated = new ImageSelectionButton("DE_241-30", tr("The street in {0} direction has a sidewalk and a cycleway that are segregated", tr(Values.FORWARD)), true);
@@ -193,16 +195,17 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     content.add(backward.separateCycleway, XY(1,4,gc));
     content.add(backward.separateCyclewayFree, XY(1,5,gc));
     content.add(gapBackward, XY(2,1,gc));
-    content.add(backward.sidewalk, XY(3,1,gc));
-    content.add(backward.shared, Y(2,gc));
-    content.add(backward.segregated, Y(3,gc));
-    content.add(backward.cyclewayOnKerb, Y(4,gc));
-    content.add(backward.bicycleFree, Y(5,gc));
-    content.add(backward.bicycleFreeBotDirection, Y(6,gc));
-    content.add(backward.bicycleUsable, Y(7,gc));
-    content.add(spaceLeftTop, Y(8,gc));
-    content.add(backward.negativeOneway, YW(9,3,gc));
-    content.add(backward.noOneway, YW(10,3,gc));
+    content.add(backward.sidewalkWithoutSign, XY(3,1,gc));
+    content.add(backward.sidewalk, XY(3,2,gc));
+    content.add(backward.shared, Y(3,gc));
+    content.add(backward.segregated, Y(4,gc));
+    content.add(backward.cyclewayOnKerb, Y(5,gc));
+    content.add(backward.bicycleFree, Y(6,gc));
+    content.add(backward.bicycleFreeBotDirection, Y(7,gc));
+    content.add(backward.bicycleUsable, Y(8,gc));
+    content.add(spaceLeftTop, Y(9,gc));
+    content.add(backward.negativeOneway, YW(10,3,gc));
+    content.add(backward.noOneway, YW(11,3,gc));
     content.add(kerbBackward, XY(4,1,gc));
     content.add(backward.cyclewayLaneExclusive, XY(5,4,gc));
     content.add(backward.cyclewayLaneAdvisory, Y(5,gc));
@@ -217,17 +220,18 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     content.add(space2, XY(8,1,gc));
     content.add(forward.cyclewayLaneExclusive, XY(9,4,gc));
     content.add(forward.cyclewayLaneAdvisory, Y(5,gc));
-    content.add(forward.negativeOneway, YW(9,3,gc));
-    content.add(forward.noOneway, YW(10,3,gc));
+    content.add(forward.negativeOneway, YW(10,3,gc));
+    content.add(forward.noOneway, YW(11,3,gc));
     content.add(kerbForward, XY(10,1,gc));
-    content.add(forward.sidewalk, XY(11,1,gc));
-    content.add(forward.shared, Y(2,gc));
-    content.add(forward.segregated, Y(3,gc));
-    content.add(forward.cyclewayOnKerb, Y(4,gc));
-    content.add(forward.bicycleFree, Y(5,gc));
-    content.add(forward.bicycleFreeBotDirection, Y(6,gc));
-    content.add(forward.bicycleUsable, Y(7,gc));
-    content.add(spaceRightTop, Y(8,gc));
+    content.add(forward.sidewalkWithoutSign, XY(11,1,gc));
+    content.add(forward.sidewalk, XY(11,2,gc));
+    content.add(forward.shared, Y(3,gc));
+    content.add(forward.segregated, Y(4,gc));
+    content.add(forward.cyclewayOnKerb, Y(5,gc));
+    content.add(forward.bicycleFree, Y(6,gc));
+    content.add(forward.bicycleFreeBotDirection, Y(7,gc));
+    content.add(forward.bicycleUsable, Y(8,gc));
+    content.add(spaceRightTop, Y(9,gc));
     content.add(gapForward, XY(12,1,gc));
     content.add(forward.separateSidewalk, XY(13,3,gc));
     content.add(forward.separateCycleway, XY(13,4,gc));
@@ -254,14 +258,16 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
         if(values.segregated > values.segregatedNo) {
           side.segregated.setSelected(true);
           
-          if(values.trafficSignNone > 0) {
+          if(values.trafficSignNone > 0 && values.bicycle > 0) {
             side.bicycleUsable.setSelected(true);
           }
         }
         else if(values.segregatedNo > 0) {
-          side.shared.setSelected(true);
+          if(values.trafficSignNone == 0) {
+            side.shared.setSelected(true);
+          }
           
-          if(values.trafficSignNone > 0) {
+          if(values.trafficSignNone > 0 && values.bicycle > 0) {
             side.bicycleUsable.setSelected(true);
           }
         }
@@ -269,7 +275,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           side.cyclewayOnKerb.setSelected(true);
         }
         
-        if(values.bicycle > values.designated || values.bicycleFree > 0) {
+        if((values.bicycle > values.designated || values.bicycleFree > 0) && values.trafficSignNone == 0) {
           side.bicycleFree.setSelected(true);
         }
         else if(values.bicycleFreeBothways > 0) {
@@ -284,12 +290,15 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           side.cyclewayLaneAdvisory.setSelected(true);
         }
       }
-      else if(values.trafficSignNone > 0) {
+      else if(values.trafficSignNone > 0 && values.bicycle > 0) {
         side.bicycleUsable.setSelected(true);
       }
       
       if(values.separateSidewalk > values.sidewalkFree) {
         side.separateSidewalk.setSelected(true);
+      }
+      else if(values.sidewalkFreeWithoutSign >= values.sidewalkFree && values.sidewalkFreeWithoutSign > 0) {
+        side.sidewalkWithoutSign.setSelected(true);
       }
       else if(values.sidewalkFree >= values.sidewalk && values.sidewalk > 0) {
         side.sidewalk.setSelected(true);
@@ -376,7 +385,12 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           String backwardSign = "";
           
           if(forward.isSidewalk()) {
-            forwardSign = Values.SIGN_FOOTWAY;
+            if(!forward.sidewalkWithoutSign.isSelected()) {
+              forwardSign = Values.SIGN_FOOTWAY;
+            }
+            else {
+              forwardSign = Values.NONE;
+            }
           }
           else if(forward.isShared() && !forward.isBicycleUsable()) {
             forwardSign = Values.SIGN_SHARED;
@@ -389,7 +403,12 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           }
           
           if(backward.isSidewalk()) {
-            backwardSign = Values.SIGN_FOOTWAY;
+            if(!forward.sidewalkWithoutSign.isSelected()) {
+              backwardSign = Values.SIGN_FOOTWAY;
+            }
+            else {
+              backwardSign = Values.NONE;
+            }
           }
           else if(backward.isShared() && !backward.isBicycleUsable()) {
             backwardSign = Values.SIGN_SHARED;
@@ -447,6 +466,12 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
             }
           }
           
+          if(forward.isBicycleUsable() || forward.sidewalkWithoutSign.isSelected()) {
+            forwardSign = Values.NONE;
+          }
+          if(backward.isBicycleUsable() || backward.sidewalkWithoutSign.isSelected()) {
+            backwardSign = Values.NONE;
+          }
           System.out.println(forwardSign + " " + backwardSign);
           
           if(!forwardSign.isBlank()) {
@@ -457,7 +482,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
             backwardSign = Values.createTrafficSignEntry(backwardSign);
           }
           
-          if((forward.isSidewalk() || forward.isSidewalkFree()) && (backward.isSidewalk() || backward.isSidewalkFree()) && !forward.isLane() && !backward.isLane()) {
+          if((forward.isSidewalk() || forward.isSidewalkFree() || forward.sidewalkWithoutSign.isSelected()) && (backward.isSidewalk() || backward.isSidewalkFree() || backward.sidewalkWithoutSign.isSelected()) && !forward.isLane() && !backward.isLane()) {
             if(Objects.equals(forwardSign, backwardSign)) {
               cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_BOTH_TRAFFIC_SIGN, forwardSign, cmdSet));
             }
@@ -466,10 +491,10 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
               cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
             }
           }
-          else if((forward.isSidewalk() || forward.isSidewalkFree()) && !forward.isLane()) {
+          else if((forward.isSidewalk() || forward.isSidewalkFree() || forward.sidewalkWithoutSign.isSelected()) && !forward.isLane()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_RIGHT_TRAFFIC_SIGN, forwardSign, cmdSet));
           }
-          else if((backward.isSidewalk() || backward.isSidewalkFree()) && !backward.isLane()) {
+          else if((backward.isSidewalk() || backward.isSidewalkFree() || backward.sidewalkWithoutSign.isSelected()) && !backward.isLane()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_TRAFFIC_SIGN, backwardSign, cmdSet));
           }
           
@@ -773,6 +798,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     
     int sidewalk;
     int sidewalkFree;
+    int sidewalkFreeWithoutSign;
     
     int cycleway;
     
@@ -801,6 +827,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     public InitalValues(String side, ArrayList<Way> ways) {
       for(Way w : ways) {
         String test = w.get(Keys.CYCLEWAY);
+        boolean noneSign = false;
         
         if(Objects.equals(test, side) || Objects.equals(test, Values.BOTH) || w.get("cycleway:"+side) != null || w.get(Keys.CYCLEWAY_BOTH) != null) {
           cycleway++;
@@ -808,13 +835,6 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
         
         if(Objects.equals(test, Values.SEPARATE) || Objects.equals(w.get("cycleway:"+side), Values.SEPARATE) || Objects.equals(w.get(Keys.CYCLEWAY_BOTH), Values.SEPARATE)) {
           separateCycleway++;
-        }
-        
-        test = w.get(Keys.SIDEWALK);
-        
-        if(Objects.equals(test, side) || Objects.equals(test, Values.BOTH) || Objects.equals(w.get("sidewalk:"+side),Values.YES) || Objects.equals(w.get(Keys.SIDEWALK_BOTH),Values.YES)
-            || Objects.equals(w.get("sidewalk:"+side),Values.LANE) || Objects.equals(w.get(Keys.SIDEWALK_BOTH),Values.LANE)) {
-          sidewalk++;
         }
         
         test = w.get(Keys.CYCLEWAY_BOTH_TRAFFIC_SIGN);
@@ -828,6 +848,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
         }
         else if((test != null && test.contains(Values.NONE)) || (test1 != null && test1.contains(Values.NONE))) {
           trafficSignNone++;
+          noneSign = true;
         }
         
         test = w.get(Keys.SIDEWALK_BOTH_TRAFFIC_SIGN);
@@ -841,8 +862,20 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
         }
         else if(test != null && (test.contains(Values.NONE) || (test1 != null && test1.contains(Values.NONE)))) {
           trafficSignNone++;
+          noneSign = true;
         }
+
+        test = w.get(Keys.SIDEWALK);
         
+        if(Objects.equals(test, side) || Objects.equals(test, Values.BOTH) || Objects.equals(w.get("sidewalk:"+side),Values.YES) || Objects.equals(w.get(Keys.SIDEWALK_BOTH),Values.YES)
+            || Objects.equals(w.get("sidewalk:"+side),Values.LANE) || Objects.equals(w.get(Keys.SIDEWALK_BOTH),Values.LANE)) {
+          if(noneSign) {
+            sidewalkFreeWithoutSign++;
+          }
+          else {
+            sidewalk++;
+          }
+        }
         
         if(Objects.equals(w.get(Keys.BICYCLE), Values.YES) || (side.equals(Values.RIGHT) && Objects.equals(w.get(Keys.BICYCLE_FORWARD), Values.YES))
             || (side.equals(Values.LEFT) && Objects.equals(w.get(Keys.BICYCLE_BACKWARD), Values.YES))) {
@@ -913,7 +946,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     
     @Override
     public String toString() {
-      return "\nseparateSidewalk="+separateSidewalk+"\nseparateCycleway="+separateCycleway+"\nseparateCyclewayFree="+separateCyclewayFree+"\ncycleway="+cycleway+"\nsidewalk="+sidewalk+"\nsidewalkFree="+sidewalkFree+"\nlane="+lane+"\nexclusive="+exclusive+"\nadvisory="+advisory+"\ntrack="+track+"\nsegregated"+segregated+"\nsegregatedNo="+segregatedNo+"\nonewayNo="+onewayNo+"\ndesignated="+designated+"\nbicycle="+bicycle+"\nbicycleFree="+bicycleFree+"\nbicycleFreeBothWays="+bicycleFreeBothways+"\ntrafficSignNone="+trafficSignNone;
+      return "\nseparateSidewalk="+separateSidewalk+"\nseparateCycleway="+separateCycleway+"\nseparateCyclewayFree="+separateCyclewayFree+"\ncycleway="+cycleway+"\nsidewalk="+sidewalk+"\nsidewalkWitoutSign="+sidewalkFreeWithoutSign+"\nsidewalkFree="+sidewalkFree+"\nlane="+lane+"\nexclusive="+exclusive+"\nadvisory="+advisory+"\ntrack="+track+"\nsegregated"+segregated+"\nsegregatedNo="+segregatedNo+"\nonewayNo="+onewayNo+"\ndesignated="+designated+"\nbicycle="+bicycle+"\nbicycleFree="+bicycleFree+"\nbicycleFreeBothWays="+bicycleFreeBothways+"\ntrafficSignNone="+trafficSignNone;
     }
   }
   
@@ -922,6 +955,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     private ImageSelectionButton separateCycleway;
     private ImageSelectionButton separateSidewalk;
     
+    private ImageSelectionButton sidewalkWithoutSign;
     private ImageSelectionButton sidewalk;
     private ImageSelectionButton shared;
     private ImageSelectionButton segregated;
@@ -938,17 +972,26 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     public void addIncompatibilities() {
       ImageSelectionButton.handleIncompatible(null,false,true,shared,segregated,cyclewayLaneExclusive,cyclewayLaneAdvisory,separateCycleway, separateCyclewayFree);
       ImageSelectionButton.handleIncompatible(null,false,true,noOneway,negativeOneway,cyclewayLaneAdvisory);
+      ImageSelectionButton.handleIncompatible(null,false,true,sidewalkWithoutSign,bicycleFree);
       ImageSelectionButton.handleIncompatible(null,false,true,bicycleFreeBotDirection, negativeOneway);
       ImageSelectionButton.handleIncompatible(null,false,true,bicycleFree,bicycleFreeBotDirection,bicycleUsable,cyclewayOnKerb);
       ImageSelectionButton.handleIncompatible(null,false,true,sidewalk,bicycleUsable,bicycleFreeBotDirection);
-      ImageSelectionButton.handleIncompatible(null,false,true,sidewalk,separateSidewalk,shared,segregated);
-      ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {separateSidewalk},true,true,sidewalk,shared);
-      ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {cyclewayOnKerb},true,true,sidewalk,shared,segregated,cyclewayLaneExclusive,cyclewayLaneAdvisory);
+      ImageSelectionButton.handleIncompatible(null,false,true,sidewalkWithoutSign,bicycleFreeBotDirection);
+      ImageSelectionButton.handleIncompatible(null,false,true,sidewalk,sidewalkWithoutSign,separateSidewalk,shared,segregated);
+      ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {separateSidewalk},true,true,sidewalk,sidewalkWithoutSign,shared);
+      ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {cyclewayOnKerb},true,true,sidewalk,sidewalkWithoutSign,shared,segregated,cyclewayLaneExclusive,cyclewayLaneAdvisory);
       ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {bicycleFree,bicycleFreeBotDirection,bicycleUsable},true,true,cyclewayLaneExclusive,cyclewayLaneAdvisory);
       ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {separateCycleway, separateCyclewayFree},true,true,shared,segregated,cyclewayOnKerb,bicycleFree,noOneway,negativeOneway,cyclewayLaneExclusive,cyclewayLaneAdvisory, bicycleUsable, bicycleFreeBotDirection);
       
       sidewalk.addItemListener(e -> {
         if(e.getStateChange() == ItemEvent.SELECTED && !isSidewalkFree() && !isLane()) {
+          noOneway.setSelected(false);
+          negativeOneway.setSelected(false);
+        }
+      });
+      
+      sidewalkWithoutSign.addItemListener(e -> {
+        if(e.getStateChange() == ItemEvent.SELECTED && !isSidewalkFree() && !isLane() && !bicycleUsable.isSelected()) {
           noOneway.setSelected(false);
           negativeOneway.setSelected(false);
         }
@@ -971,8 +1014,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           if(!cyclewayOnKerb.isSelected() && !isLane() && isSeparateSidewalk()) {
             separateCycleway.setSelected(false);
           }
-          if(sidewalk.isSelected() && !bicycleFree.isSelected() && !bicycleFreeBotDirection.isSelected() && !isLaneExclusive()) {
-            sidewalk.setSelected(false);
+          if(((sidewalkWithoutSign.isSelected() && !bicycleUsable.isSelected()) || sidewalk.isSelected()) && !bicycleFree.isSelected() && !bicycleFreeBotDirection.isSelected() && !isLaneExclusive()) {
             shared.setSelected(true);
           }
         }
@@ -982,14 +1024,14 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
       negativeOneway.addItemListener(oneways);
       
       cyclewayLaneExclusive.addItemListener(e -> {
-        if(e.getStateChange() == ItemEvent.DESELECTED && !isLane() && sidewalk.isSelected()) {
+        if(e.getStateChange() == ItemEvent.DESELECTED && !isLane() && (sidewalk.isSelected() || sidewalkWithoutSign.isSelected())) {
           noOneway.setSelected(false);
           negativeOneway.setSelected(false);
         }
       });
       
       cyclewayLaneAdvisory.addItemListener(e -> {
-        if(e.getStateChange() == ItemEvent.DESELECTED && !isLane() && sidewalk.isSelected()) {
+        if(e.getStateChange() == ItemEvent.DESELECTED && !isLane() && (sidewalk.isSelected() || sidewalkWithoutSign.isSelected())) {
           noOneway.setSelected(false);
           negativeOneway.setSelected(false);
         }
@@ -1018,11 +1060,11 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     }
     
     public boolean isSidewalk() {
-      return sidewalk.isSelected() && !shared.isSelected() && !segregated.isSelected() && !bicycleUsable.isSelected();
+      return (sidewalk.isSelected() || sidewalkWithoutSign.isSelected()) && !shared.isSelected() && !segregated.isSelected() && !bicycleUsable.isSelected();
     }
     
     public boolean hasSidewalk() {
-      return sidewalk.isSelected() || shared.isSelected() || segregated.isSelected() || (!separateSidewalk.isSelected() && (bicycleUsable.isSelected() || bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()));
+      return (sidewalk.isSelected() || sidewalkWithoutSign.isSelected()) || shared.isSelected() || segregated.isSelected() || (!separateSidewalk.isSelected() && (bicycleUsable.isSelected() || bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()));
     }
     
     public boolean isBicycleUsable() {
@@ -1030,7 +1072,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     }
     
     public boolean isCycleway() {
-      return shared.isSelected() || cyclewayOnKerb.isSelected() || segregated.isSelected()  || bicycleUsable.isSelected() || (!sidewalk.isSelected() && (bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected())) || cyclewayLaneAdvisory.isSelected() || cyclewayLaneExclusive.isSelected() || bicycleUsable.isSelected();
+      return shared.isSelected() || cyclewayOnKerb.isSelected() || segregated.isSelected()  || bicycleUsable.isSelected() || (!sidewalk.isSelected() && !sidewalkWithoutSign.isSelected() && (bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected())) || cyclewayLaneAdvisory.isSelected() || cyclewayLaneExclusive.isSelected() || bicycleUsable.isSelected();
     }
     
     public boolean isSegregated() {
@@ -1042,7 +1084,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     }
     
     public boolean isOnKerb() {
-      return shared.isSelected() || segregated.isSelected() || cyclewayOnKerb.isSelected() || ((bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()) && !sidewalk.isSelected()) || bicycleUsable.isSelected();
+      return shared.isSelected() || segregated.isSelected() || cyclewayOnKerb.isSelected() || ((bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()) && !sidewalk.isSelected() && !sidewalkWithoutSign.isSelected()) || bicycleUsable.isSelected();
     }
     
     public boolean isLane() {
@@ -1074,11 +1116,11 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
     }
     
     public boolean isFree() {
-      return (bicycleFree.isSelected() || bicycleUsable.isSelected() || (bicycleFreeBotDirection.isSelected() && !isShared() && !isSegregated())) && !sidewalk.isSelected();
+      return (bicycleFree.isSelected() || bicycleUsable.isSelected() || (bicycleFreeBotDirection.isSelected() && !isShared() && !isSegregated())) && !sidewalk.isSelected() && !sidewalkWithoutSign.isSelected();
     }
     
     public boolean hasCycleway() {
-      return bicycleUsable.isSelected() || cyclewayLaneAdvisory.isSelected() || cyclewayLaneExclusive.isSelected() || cyclewayOnKerb.isSelected() || shared.isSelected() || segregated.isSelected() || separateCycleway.isSelected() || separateCyclewayFree.isSelected() || ((bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()) && !sidewalk.isSelected());
+      return bicycleUsable.isSelected() || cyclewayLaneAdvisory.isSelected() || cyclewayLaneExclusive.isSelected() || cyclewayOnKerb.isSelected() || shared.isSelected() || segregated.isSelected() || separateCycleway.isSelected() || separateCyclewayFree.isSelected() || ((bicycleFree.isSelected() || bicycleFreeBotDirection.isSelected()) && !sidewalk.isSelected() && !sidewalkWithoutSign.isSelected());
     }
   }
 }
