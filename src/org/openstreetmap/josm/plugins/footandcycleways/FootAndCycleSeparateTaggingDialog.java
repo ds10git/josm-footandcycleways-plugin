@@ -468,10 +468,9 @@ System.out.println(footwayWithoutSign + " " + bicycleFree +" "+bicycleUsable+" "
           trafficSign += Values.SIGN_BOTH_WAYS;
         }
         
-        if(trafficSign.isBlank() && bicycleFree.isSelected() || bicycleUsable.isSelected() || sidewalk.isSelected() || sidewalkWithoutSign.isSelected()) {
+        if(trafficSign.isBlank() && (bicycleFree.isSelected() || bicycleUsable.isSelected() || sidewalk.isSelected() || sidewalkWithoutSign.isSelected())) {
           trafficSign += Values.NONE;
         }
-        
         
         if(!trafficSign.isBlank()) {
           cmds.add(TagWaysAction.createCommand(w, Keys.TRAFFIC_SIGN, Values.createTrafficSignEntry(trafficSign), cmdSet));
