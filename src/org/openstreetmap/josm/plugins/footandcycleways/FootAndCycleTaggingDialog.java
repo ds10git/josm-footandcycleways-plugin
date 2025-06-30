@@ -1040,7 +1040,7 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
       ImageSelectionButton.handleIncompatible(null,false,true,sidewalkWithoutSign,bicycleFree);
       ImageSelectionButton.handleIncompatible(null,false,true,bicycleFreeBotDirection, negativeOneway);
       ImageSelectionButton.handleIncompatible(null,false,true,bicycleFree,bicycleFreeBotDirection,bicycleUsable,cyclewayOnKerb,shared,segregated);
-      ImageSelectionButton.handleIncompatible(null,false,true,sidewalk,bicycleUsable,bicycleFreeBotDirection);
+      ImageSelectionButton.handleIncompatible(null,false,true,bicycleUsable,bicycleFreeBotDirection);
       ImageSelectionButton.handleIncompatible(null,false,true,sidewalkWithoutSign,bicycleFreeBotDirection);
       ImageSelectionButton.handleIncompatible(null,false,true,sidewalk,sidewalkWithoutSign,separateSidewalk,shared,segregated);
       ImageSelectionButton.handleIncompatible(new ImageSelectionButton[] {separateSidewalk},true,true,sidewalk,sidewalkWithoutSign,shared);
@@ -1050,7 +1050,6 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
       
       sidewalk.addItemListener(e -> {
         if(e.getStateChange() == ItemEvent.SELECTED && !isSidewalkFree() && !isLane()) {
-          noOneway.setSelected(false);
           negativeOneway.setSelected(false);
         }
       });
