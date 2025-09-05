@@ -50,7 +50,7 @@ public final class Values {
   public static final String SIGN_BICYLCE_BOTH_WAYS = "1000-33";
   public static final String SIGN_BOTH_WAYS = "1000-31";
   
-  public static final String SIGN_DESTINATION = "1026-30";
+  public static final String SIGN_DESTINATION = "1020-30";
   public static final String SIGN_AGRICULTURAL = "1026-36";
   public static final String SIGN_FORESTRY = "1026-37";
   public static final String SIGN_AGRICULTURAL_FORESTRY = "1026-38";

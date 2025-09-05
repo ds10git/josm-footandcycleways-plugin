@@ -442,6 +442,10 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
               }
               
               forwardSignSidewalk += Values.SIGN_BICYLCE_FREE;
+              
+              if(forward.noOneway.isSelected()) {
+                forwardSignSidewalk += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+              }
             }
           }
           System.out.println("backwardSignSidewalk " + backwardSignSidewalk);
@@ -473,6 +477,10 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
               }
               
               backwardSignSidewalk += Values.SIGN_BICYLCE_FREE;
+              
+              if(backward.noOneway.isSelected()) {
+                backwardSignSidewalk += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+              }
             }
           }
           System.out.println("backwardSignSidewalk " + backwardSignSidewalk);
@@ -493,6 +501,10 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           if(forward.isFree()) {
             if(forward.bicycleFree.isSelected()) {
               forwardSignSidewalk = Values.SIGN_BICYLCE_FREE;
+              
+              if(forward.noOneway.isSelected()) {
+                forwardSignSidewalk += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+              }
             }
             else if(forward.bicycleFreeBotDirection.isSelected()) {
               forwardSignSidewalk = Values.SIGN_BICYLCE_BOTH_WAYS;
@@ -501,10 +513,14 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
               forwardSignSidewalk = Values.NONE;
             }
           }
-
+          
           if(backward.isFree()) {
             if(backward.bicycleFree.isSelected()) {
               backwardSignSidewalk = Values.SIGN_BICYLCE_FREE;
+              
+              if(backward.noOneway.isSelected()) {
+                backwardSignSidewalk += Values.TRAFFIC_SIGN_SEPARATOR + Values.SIGN_BOTH_WAYS;
+              }
             }
             else if(backward.bicycleFreeBotDirection.isSelected()) {
               backwardSignSidewalk = Values.SIGN_BICYLCE_BOTH_WAYS;
@@ -587,7 +603,6 @@ public class FootAndCycleTaggingDialog extends ExtendedDialog {
           else if(backward.isSidewalkFree()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_LEFT_FOOT, Values.DESIGNATED, cmdSet));
           }
-          
           
           if(forward.isSidewalkFree() && backward.isSidewalkFree() && forward.isNoPositiveOneway() && backward.isNoPositiveOneway()) {
             cmds.add(TagWaysAction.createCommand(w, Keys.SIDEWALK_BOTH_ONEWAY, Values.NO, cmdSet));
